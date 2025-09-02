@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import pandas as pd
 import numpy as np
@@ -9,7 +9,8 @@ from sklearn.metrics import accuracy_score, classification_report
 import joblib
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+from report_generator import generate_stroke_report
 
 app = Flask(__name__)
 CORS(app)
@@ -104,7 +105,7 @@ def train_synthetic_model():
     # Handle missing values
     df['bmi'] = df['bmi'].fillna(df['bmi'].mean())
     
-    # Prepare features
+    # Prepare features - exclude 'id' column
     categorical_features = ['gender', 'ever_married', 'work_type', 'Residence_type', 'smoking_status']
     numerical_features = ['age', 'hypertension', 'heart_disease', 'avg_glucose_level', 'bmi']
     
@@ -114,7 +115,7 @@ def train_synthetic_model():
         df[feature] = le.fit_transform(df[feature])
         label_encoders[feature] = le
     
-    # Prepare X and y
+    # Prepare X and y - exclude 'id' column
     X = df[numerical_features + categorical_features]
     y = df['stroke']
     feature_names = X.columns.tolist()
@@ -138,6 +139,7 @@ def train_synthetic_model():
     y_pred = model.predict(X_test_scaled)
     accuracy = accuracy_score(y_test, y_pred)
     print(f"✅ Synthetic model trained with accuracy: {accuracy:.3f}")
+    print(f"📊 Features used: {feature_names}")
     
     return True
 
@@ -146,6 +148,11 @@ def preprocess_input(data):
     try:
         # Create a DataFrame with the input data
         input_df = pd.DataFrame([data])
+        
+        # Ensure feature_names is set
+        if not feature_names:
+            print("❌ Error: feature_names not set")
+            return None
         
         # Handle missing values if imputer is available
         if imputer is not None:
@@ -161,11 +168,13 @@ def preprocess_input(data):
                     input_df[feature] = encoder.transform(input_df[feature])
                 except ValueError:
                     # If category not seen during training, use most frequent
+                    print(f"⚠️  Warning: Unseen category for {feature}, using default")
                     input_df[feature] = 0
         
         # Ensure all required features are present
         for feature in feature_names:
             if feature not in input_df.columns:
+                print(f"⚠️  Warning: Missing feature {feature}, using default value 0")
                 input_df[feature] = 0  # Default value
         
         # Reorder columns to match training data
@@ -176,10 +185,11 @@ def preprocess_input(data):
         if scaler is not None and numerical_features:
             input_df[numerical_features] = scaler.transform(input_df[numerical_features])
         
+        print(f"✅ Preprocessing successful. Input shape: {input_df.shape}")
         return input_df
         
     except Exception as e:
-        print(f"Error in preprocessing: {e}")
+        print(f"❌ Error in preprocessing: {e}")
         return None
 
 def get_recommendations(risk_level, features):
@@ -277,7 +287,17 @@ def get_recommendations(risk_level, features):
 def predict_stroke():
     """Predict stroke risk based on input data"""
     try:
+        print("🔍 Starting prediction request...")
         data = request.json
+        print(f"📊 Received data: {data}")
+        
+        # Check if model is loaded
+        if model is None:
+            print("❌ Model not loaded")
+            return jsonify({'error': 'Model not loaded'}), 500
+        
+        print(f"✅ Model loaded: {type(model)}")
+        print(f"📋 Feature names: {feature_names}")
         
         # Validate required fields
         required_fields = ['age', 'gender', 'hypertension', 'heart_disease', 'ever_married', 
@@ -285,16 +305,36 @@ def predict_stroke():
         
         for field in required_fields:
             if field not in data:
+                print(f"❌ Missing field: {field}")
                 return jsonify({'error': f'Missing required field: {field}'}), 400
         
+        print("✅ All required fields present")
+        
         # Preprocess input data
+        print("🔄 Preprocessing data...")
         processed_data = preprocess_input(data)
         if processed_data is None:
+            print("❌ Preprocessing failed")
             return jsonify({'error': 'Failed to preprocess input data'}), 500
         
+        print(f"✅ Preprocessing successful. Data shape: {processed_data.shape}")
+        print(f"📊 Processed data columns: {processed_data.columns.tolist()}")
+        print(f"📊 Processed data values: {processed_data.values}")
+        
         # Make prediction
-        prediction_proba = model.predict_proba(processed_data)[0]
+        print("🎯 Making prediction...")
+        try:
+            prediction_proba = model.predict_proba(processed_data)[0]
+            print(f"✅ Prediction successful: {prediction_proba}")
+        except Exception as pred_error:
+            print(f"❌ Prediction error: {pred_error}")
+            print(f"❌ Model type: {type(model)}")
+            print(f"❌ Model features: {getattr(model, 'n_features_in_', 'Unknown')}")
+            print(f"❌ Input features: {len(processed_data.columns)}")
+            raise pred_error
+        
         stroke_probability = prediction_proba[1] * 100
+        print(f"📊 Stroke probability: {stroke_probability:.2f}%")
         
         # Determine risk level
         if stroke_probability < 15:
@@ -304,7 +344,10 @@ def predict_stroke():
         else:
             risk_level = 'high'
         
+        print(f"🎯 Risk level: {risk_level}")
+        
         # Get recommendations
+        print("💡 Getting recommendations...")
         recommendations = get_recommendations(risk_level, data)
         
         # Prepare response
@@ -325,21 +368,59 @@ def predict_stroke():
             }
         }
         
+        # Convert boolean values to strings for JSON serialization
+        response['risk_category'] = {
+            'low': str(response['risk_category']['low']).lower(),
+            'moderate': str(response['risk_category']['moderate']).lower(),
+            'high': str(response['risk_category']['high']).lower()
+        }
+        
+        print("✅ Prediction completed successfully")
         return jsonify(response)
     
     except Exception as e:
+        print(f"❌ Prediction error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'model_loaded': model is not None,
-        'model_type': 'trained' if model_metadata else 'synthetic',
-        'features_count': len(feature_names),
-        'timestamp': datetime.now().isoformat()
-    })
+    try:
+        model_status = {
+            'loaded': model is not None,
+            'type': str(type(model)) if model else 'None',
+            'feature_count': len(feature_names) if feature_names else 0,
+            'feature_names': feature_names if feature_names else [],
+            'has_scaler': scaler is not None,
+            'has_encoders': len(label_encoders) > 0 if label_encoders else False,
+            'encoder_features': list(label_encoders.keys()) if label_encoders else [],
+            'model_metadata': model_metadata if model_metadata else None
+        }
+        
+        if model is not None:
+            try:
+                model_status['n_features_in'] = getattr(model, 'n_features_in_', 'Unknown')
+                model_status['n_classes'] = getattr(model, 'n_classes_', 'Unknown')
+                model_status['feature_importances'] = len(model.feature_importances_) if hasattr(model, 'feature_importances_') else 'Unknown'
+            except Exception as e:
+                model_status['model_details_error'] = str(e)
+        
+        return jsonify({
+            'status': 'healthy',
+            'model_loaded': model is not None,
+            'model_type': 'trained' if model_metadata else 'synthetic',
+            'features_count': len(feature_names) if feature_names else 0,
+            'timestamp': datetime.now().isoformat(),
+            'model_details': model_status
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'timestamp': datetime.now().isoformat()
+        })
 
 @app.route('/api/features', methods=['GET'])
 def get_feature_importance():
@@ -395,6 +476,86 @@ def get_model_info():
         'metadata': model_metadata if model_metadata else None,
         'last_updated': model_metadata.get('timestamp', 'N/A') if model_metadata else 'N/A'
     })
+
+@app.route('/api/download-report', methods=['POST'])
+def download_report():
+    """Generate and download a PDF report for prediction results"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Generate PDF report
+        report_result = generate_stroke_report(data)
+        
+        if not report_result['success']:
+            return jsonify({'error': report_result['error']}), 500
+        
+        # Return the PDF file
+        return send_file(
+            report_result['file_path'],
+            as_attachment=True,
+            download_name=report_result['filename'],
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        print(f"❌ Error generating report: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/share-results', methods=['POST'])
+def share_results():
+    """Share results via email or generate shareable link"""
+    try:
+        data = request.json
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Generate a unique share ID
+        import hashlib
+        import time
+        
+        share_data = f"{data.get('stroke_probability', 0)}_{data.get('risk_level', 'unknown')}_{time.time()}"
+        share_id = hashlib.md5(share_data.encode()).hexdigest()[:8]
+        
+        # Store shared results (in production, use a database)
+        shared_results = {
+            'share_id': share_id,
+            'data': data,
+            'timestamp': datetime.now().isoformat(),
+            'expires_at': (datetime.now() + timedelta(days=7)).isoformat()  # Expires in 7 days
+        }
+        
+        # In production, store this in a database
+        # For now, we'll just return the share ID
+        share_url = f"https://yourdomain.com/share/{share_id}"
+        
+        return jsonify({
+            'success': True,
+            'share_id': share_id,
+            'share_url': share_url,
+            'expires_at': shared_results['expires_at'],
+            'message': 'Results shared successfully'
+        })
+        
+    except Exception as e:
+        print(f"❌ Error sharing results: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/share/<share_id>', methods=['GET'])
+def get_shared_results(share_id):
+    """Get shared results by share ID"""
+    try:
+        # In production, retrieve from database
+        # For now, return a message
+        return jsonify({
+            'message': 'Shared results endpoint',
+            'share_id': share_id,
+            'note': 'This would retrieve shared results from database in production'
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("🏥 Initializing Stroke Prediction System...")
