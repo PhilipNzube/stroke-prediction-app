@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stroke Model Training Interface</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e8ed;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            display: none;
+        }
+        
+        .metric {
+            display: inline-block;
+            margin: 10px 20px 10px 0;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3498db;
+            display: block;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Stroke Model Training Interface</h1>
+            <p>Professional Machine Learning Model Training for Developers</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>📊 Dataset Upload</h2>
+                <div class="form-group">
+                    <label for="csvFile">Select CSV Dataset:</label>
+                    <input type="file" id="csvFile" accept=".csv" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="targetColumn">Target Column Name:</label>
+                    <input type="text" id="targetColumn" class="form-control" value="stroke" placeholder="Enter target column name">
+                </div>
+                <button class="btn" onclick="analyzeDataset()">🔍 Analyze Dataset</button>
+            </div>
+            
+            <div class="section" id="trainingConfig" style="display: none;">
+                <h2>⚙️ Training Configuration</h2>
+                <div class="form-group">
+                    <label for="testSize">Test Size (%):</label>
+                    <input type="number" id="testSize" class="form-control" value="20" min="10" max="40" step="5">
+                </div>
+                <div class="form-group">
+                    <label for="useGridSearch">Use Hyperparameter Tuning:</label>
+                    <select id="useGridSearch" class="form-control">
+                        <option value="true">Yes (GridSearchCV)</option>
+                        <option value="false">No (Default Parameters)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modelName">Model Name:</label>
+                    <input type="text" id="modelName" class="form-control" value="stroke_model" placeholder="Enter model name">
+                </div>
+                <button class="btn btn-success" onclick="startTraining()">🚀 Start Training</button>
+            </div>
+            
+            <div class="results" id="results">
+                <h2>📈 Training Results</h2>
+                <div id="metrics"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeDataset() {
+            const fileInput = document.getElementById('csvFile');
+            const targetColumn = document.getElementById('targetColumn').value;
+            
+            if (!fileInput.files[0]) {
+                showAlert('Please select a CSV file first', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('target_column', targetColumn);
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('trainingConfig').style.display = 'block';
+                    showAlert('Dataset analyzed successfully! You can now configure training parameters.', 'success');
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error analyzing dataset: ' + error.message, 'error');
+            }
+        }
+        
+        async function startTraining() {
+            const fileInput = document.getElementById('csvFile');
+            const targetColumn = document.getElementById('targetColumn').value;
+            const testSize = document.getElementById('testSize').value;
+            const useGridSearch = document.getElementById('useGridSearch').value;
+            const modelName = document.getElementById('modelName').value;
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('target_column', targetColumn);
+            formData.append('test_size', testSize);
+            formData.append('use_grid_search', useGridSearch);
+            formData.append('model_name', modelName);
+            
+            try {
+                const response = await fetch('/api/train', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResults(result.results);
+                    showAlert('Training completed successfully!', 'success');
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error during training: ' + error.message, 'error');
+            }
+        }
+        
+        function showResults(results) {
+            const metricsDiv = document.getElementById('metrics');
+            
+            metricsDiv.innerHTML = `
+                <div class="metric">
+                    <span class="metric-value">${(results.accuracy * 100).toFixed(2)}%</span>
+                    <span class="metric-label">Accuracy</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">${results.roc_auc.toFixed(4)}</span>
+                    <span class="metric-label">ROC AUC</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">${(results.cv_mean * 100).toFixed(2)}%</span>
+                    <span class="metric-label">CV Score</span>
+                </div>
+            `;
+            
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            
+            document.querySelector('.content').insertBefore(alertDiv, document.querySelector('.section'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
