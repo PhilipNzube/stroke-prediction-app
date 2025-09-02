@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -43,6 +43,8 @@ const Results = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const { results, predictionData, loading, error } = usePrediction();
+  const [downloading, setDownloading] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   if (loading) {
     return (
@@ -113,44 +115,116 @@ const Results = () => {
     }
   };
 
-  const handleDownloadReport = () => {
-    const reportData = {
-      timestamp: new Date().toLocaleString(),
-      riskAssessment: {
-        strokeProbability: results.stroke_probability,
-        riskLevel: results.risk_level,
-        riskCategory: results.risk_category,
-      },
-      userData: predictionData,
-      recommendations: results.recommendations,
-    };
+  const handleDownloadReport = async () => {
+    try {
+      setDownloading(true);
+      
+      // Prepare data for PDF generation
+      const reportData = {
+        stroke_probability: results.stroke_probability,
+        risk_level: results.risk_level,
+        risk_category: results.risk_category,
+        recommendations: results.recommendations,
+        userData: predictionData,
+        timestamp: new Date().toISOString()
+      };
 
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], {
-      type: 'application/json',
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `stroke-risk-assessment-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      // Call the PDF generation endpoint
+      const response = await fetch('http://localhost:5000/api/download-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reportData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PDF report');
+      }
+
+      // Get the PDF blob and download it
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `stroke-risk-assessment-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('Failed to download PDF report. Please try again.');
+    } finally {
+      setDownloading(false);
+    }
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: 'My Stroke Risk Assessment',
-        text: `My stroke risk assessment shows ${results.risk_level} risk (${results.stroke_probability}% probability).`,
-        url: window.location.href,
+  const handleShare = async () => {
+    try {
+      setSharing(true);
+      
+      // Prepare data for sharing
+      const shareData = {
+        stroke_probability: results.stroke_probability,
+        risk_level: results.risk_level,
+        risk_category: results.risk_category,
+        recommendations: results.recommendations,
+        userData: predictionData,
+        timestamp: new Date().toISOString()
+      };
+
+      // Call the share endpoint
+      const response = await fetch('http://localhost:5000/api/share-results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(shareData),
       });
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(
-        `My stroke risk assessment: ${results.risk_level} risk (${results.stroke_probability}% probability)`
-      );
-      alert('Assessment summary copied to clipboard!');
+
+      if (!response.ok) {
+        throw new Error('Failed to share results');
+      }
+
+      const shareResult = await response.json();
+
+      if (shareResult.success) {
+        // Try to use native sharing first
+        if (navigator.share) {
+          navigator.share({
+            title: 'My Stroke Risk Assessment',
+            text: `My stroke risk assessment shows ${results.risk_level} risk (${results.stroke_probability}% probability).`,
+            url: shareResult.share_url,
+          });
+        } else {
+          // Fallback: copy share link to clipboard
+          navigator.clipboard.writeText(shareResult.share_url);
+          alert(`Results shared successfully! Share link copied to clipboard: ${shareResult.share_url}`);
+        }
+      } else {
+        throw new Error(shareResult.error || 'Failed to share results');
+      }
+
+    } catch (error) {
+      console.error('Error sharing results:', error);
+      
+      // Fallback to basic sharing
+      if (navigator.share) {
+        navigator.share({
+          title: 'My Stroke Risk Assessment',
+          text: `My stroke risk assessment shows ${results.risk_level} risk (${results.stroke_probability}% probability).`,
+          url: window.location.href,
+        });
+      } else {
+        navigator.clipboard.writeText(
+          `My stroke risk assessment: ${results.risk_level} risk (${results.stroke_probability}% probability)`
+        );
+        alert('Assessment summary copied to clipboard!');
+      }
+    } finally {
+      setSharing(false);
     }
   };
 
@@ -259,18 +333,20 @@ const Results = () => {
           <Button
             variant="outlined"
             onClick={handleDownloadReport}
-            startIcon={<Download />}
+            startIcon={downloading ? <CircularProgress size={20} /> : <Download />}
             size="large"
+            disabled={downloading}
           >
-            Download Report
+            {downloading ? 'Generating PDF...' : 'Download Report'}
           </Button>
           <Button
             variant="outlined"
             onClick={handleShare}
-            startIcon={<Share />}
+            startIcon={sharing ? <CircularProgress size={20} /> : <Share />}
             size="large"
+            disabled={sharing}
           >
-            Share Results
+            {sharing ? 'Sharing...' : 'Share Results'}
           </Button>
         </Box>
       </motion.div>
