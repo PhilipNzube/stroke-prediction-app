@@ -27,29 +27,10 @@ def load_or_train_model():
     """Load existing trained model or fall back to synthetic data training"""
     global model, label_encoders, scaler, imputer, feature_names, model_metadata
     
-    # First, try to load the model from root directory (for Render deployment)
-    if os.path.exists('stroke_model.joblib') and os.path.exists('stroke_model_components.joblib'):
-        try:
-            print("🔍 Found model files in root directory...")
-            model = joblib.load('stroke_model.joblib')
-            components = joblib.load('stroke_model_components.joblib')
-            
-            label_encoders = components['label_encoders']
-            scaler = components['scaler']
-            imputer = components['imputer']
-            feature_names = components['feature_names']
-            
-            print(f"✅ Loaded trained model from root directory")
-            print(f"   Features: {len(feature_names)}")
-            return True
-            
-        except Exception as e:
-            print(f"⚠️  Failed to load model from root: {e}")
-    
-    # Second, try to load from models directory
+    # First, try to load from models directory (look for most recent trained model)
     models_dir = 'models'
     if os.path.exists(models_dir):
-        # Look for the most recent model
+        # Look for the most recent model files
         model_files = [f for f in os.listdir(models_dir) if f.endswith('_metadata.json')]
         if model_files:
             # Sort by timestamp (newest first)
@@ -78,6 +59,25 @@ def load_or_train_model():
             except Exception as e:
                 print(f"⚠️  Failed to load trained model: {e}")
                 print("   Falling back to synthetic data training...")
+    
+    # Second, try to load the model from root directory (for Render deployment)
+    if os.path.exists('stroke_model.joblib') and os.path.exists('stroke_model_components.joblib'):
+        try:
+            print("🔍 Found model files in root directory...")
+            model = joblib.load('stroke_model.joblib')
+            components = joblib.load('stroke_model_components.joblib')
+
+            label_encoders = components['label_encoders']
+            scaler = components['scaler']
+            imputer = components['imputer']
+            feature_names = components['feature_names']
+
+            print(f"✅ Loaded trained model from root directory")
+            print(f"   Features: {len(feature_names)}")
+            return True
+
+        except Exception as e:
+            print(f"⚠️  Failed to load model from root: {e}")
     
     # Fall back to synthetic data training
     print("🔄 No trained model found. Training with synthetic data...")
@@ -172,6 +172,11 @@ def preprocess_input(data):
         if not feature_names:
             print("❌ Error: feature_names not set")
             return None
+        
+        # Remove 'id' column if it exists in input data (not needed for prediction)
+        if 'id' in input_df.columns:
+            print("🔧 Removing 'id' column from input data")
+            input_df = input_df.drop(columns=['id'])
         
         # Handle missing values if imputer is available
         if imputer is not None:

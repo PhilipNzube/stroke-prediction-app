@@ -53,6 +53,11 @@ class StrokeModelTrainer:
             X = df.drop(columns=[target_column])
             y = df[target_column]
             
+            # Remove 'id' column if it exists (not needed for prediction)
+            if 'id' in X.columns:
+                print("🔧 Removing 'id' column from features (not needed for prediction)")
+                X = X.drop(columns=['id'])
+            
             # Store feature names
             self.feature_names = X.columns.tolist()
             
