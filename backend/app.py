@@ -27,7 +27,26 @@ def load_or_train_model():
     """Load existing trained model or fall back to synthetic data training"""
     global model, label_encoders, scaler, imputer, feature_names, model_metadata
     
-    # First, try to load the most recent trained model
+    # First, try to load the model from root directory (for Render deployment)
+    if os.path.exists('stroke_model.joblib') and os.path.exists('stroke_model_components.joblib'):
+        try:
+            print("🔍 Found model files in root directory...")
+            model = joblib.load('stroke_model.joblib')
+            components = joblib.load('stroke_model_components.joblib')
+            
+            label_encoders = components['label_encoders']
+            scaler = components['scaler']
+            imputer = components['imputer']
+            feature_names = components['feature_names']
+            
+            print(f"✅ Loaded trained model from root directory")
+            print(f"   Features: {len(feature_names)}")
+            return True
+            
+        except Exception as e:
+            print(f"⚠️  Failed to load model from root: {e}")
+    
+    # Second, try to load from models directory
     models_dir = 'models'
     if os.path.exists(models_dir):
         # Look for the most recent model
