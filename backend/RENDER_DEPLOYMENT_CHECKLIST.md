@@ -107,7 +107,7 @@ After deployment, update your frontend API calls:
 const response = await fetch('http://localhost:5000/api/predict', {
 
 // To:
-const response = await fetch('https://your-app-name.onrender.com/api/predict', {
+const response = await fetch('https://stroke-prediction-app-dwyf.onrender.com/api/predict', {
 ```
 
 ## **📱 Quick Test Commands**

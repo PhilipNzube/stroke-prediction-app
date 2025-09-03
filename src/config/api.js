@@ -5,7 +5,7 @@ const API_CONFIG = {
     timeout: 10000,
   },
   production: {
-    baseURL: "https://your-backend-name.onrender.com", // Replace with your actual Render URL
+    baseURL: "https://stroke-prediction-app-dwyf.onrender.com", // Your deployed Render backend
     timeout: 15000,
   },
 };

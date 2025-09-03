@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Your Render backend URL (replace with your actual URL)
-const PRODUCTION_URL = "https://your-backend-name.onrender.com";
+const PRODUCTION_URL = "https://stroke-prediction-app-dwyf.onrender.com";
 
 // Path to the API config file
 const configPath = path.join(__dirname, "src", "config", "api.js");

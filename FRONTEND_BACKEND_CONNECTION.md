@@ -168,7 +168,7 @@ VITE_API_BASE_URL=http://localhost:5000
 ### **Production** (`.env.production`)
 
 ```env
-VITE_API_BASE_URL=https://your-backend-name.onrender.com
+VITE_API_BASE_URL=https://stroke-prediction-app-dwyf.onrender.com
 ```
 
 Then update `src/config/api.js`:
