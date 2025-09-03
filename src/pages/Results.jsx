@@ -37,6 +37,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { usePrediction } from '../context/PredictionContext';
 import { motion } from 'framer-motion';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Results = () => {
   const theme = useTheme();
@@ -130,7 +131,7 @@ const Results = () => {
       };
 
       // Call the PDF generation endpoint
-      const response = await fetch('http://localhost:5000/api/download-report', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.DOWNLOAD_REPORT), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ const Results = () => {
       };
 
       // Call the share endpoint
-      const response = await fetch('http://localhost:5000/api/share-results', {
+      const response = await fetch(buildApiUrl(API_ENDPOINTS.SHARE_RESULTS), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

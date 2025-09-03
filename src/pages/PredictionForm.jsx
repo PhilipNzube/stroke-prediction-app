@@ -35,6 +35,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { usePrediction } from '../context/PredictionContext';
 import axios from 'axios';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const steps = ['Personal Information', 'Health Conditions', 'Lifestyle & Work'];
 
@@ -119,7 +120,7 @@ const PredictionForm = () => {
 
       setPredictionData(processedData);
 
-      const response = await axios.post('http://localhost:5000/api/predict', processedData);
+      const response = await axios.post(buildApiUrl(API_ENDPOINTS.PREDICT), processedData);
       setResults(response.data);
       navigate('/results');
     } catch (error) {

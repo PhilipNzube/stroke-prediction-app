@@ -37,6 +37,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { buildApiUrl, API_ENDPOINTS } from '../config/api';
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -51,8 +52,8 @@ const Dashboard = () => {
       try {
         setLoading(true);
         const [statsResponse, featuresResponse] = await Promise.all([
-          axios.get('http://localhost:5000/api/statistics'),
-          axios.get('http://localhost:5000/api/features'),
+          axios.get(buildApiUrl(API_ENDPOINTS.STATISTICS)),
+          axios.get(buildApiUrl(API_ENDPOINTS.FEATURES)),
         ]);
         
         setStatistics(statsResponse.data);
