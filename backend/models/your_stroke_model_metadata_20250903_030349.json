@@ -1,0 +1,19 @@
+{
+  "model_name": "your_stroke_model",
+  "timestamp": "20250903_030349",
+  "feature_names": [
+    "gender",
+    "age",
+    "hypertension",
+    "heart_disease",
+    "ever_married",
+    "work_type",
+    "Residence_type",
+    "avg_glucose_level",
+    "bmi",
+    "smoking_status"
+  ],
+  "model_path": "models/your_stroke_model_20250903_030349.joblib",
+  "components_path": "models/your_stroke_model_components_20250903_030349.joblib",
+  "training_history": []
+}
