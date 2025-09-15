@@ -45,62 +45,63 @@ def load_or_train_model():
         print(f"   ❌ Error listing directory: {e}")
     
     # First, try to load from models directory (look for most recent trained model)
-    models_dir = 'models'
+    models_dir = os.path.join(current_dir, 'models')
     if os.path.exists(models_dir):
         print(f"🔍 Found models directory: {os.path.abspath(models_dir)}")
         # Look for the most recent model files
-        model_files = [f for f in os.listdir(models_dir) if f.endswith('_metadata.json')]
-        if model_files:
-            # Sort by timestamp (newest first)
-            model_files.sort(reverse=True)
-            latest_metadata = model_files[0]
-            
-            try:
-                metadata_path = os.path.join(models_dir, latest_metadata)
-                print(f"🔍 Loading metadata from: {os.path.abspath(metadata_path)}")
+        try:
+            model_files = [f for f in os.listdir(models_dir) if f.endswith('_metadata.json')]
+            if model_files:
+                # Sort by timestamp (newest first)
+                model_files.sort(reverse=True)
+                latest_metadata = model_files[0]
                 
-                with open(metadata_path, 'r') as f:
-                    metadata = json.load(f)
-                
-                # Convert relative paths to absolute paths
-                model_path = metadata['model_path']
-                components_path = metadata['components_path']
-                
-                # If paths are relative, make them absolute
-                if not os.path.isabs(model_path):
-                    model_path = os.path.join(current_dir, model_path)
-                if not os.path.isabs(components_path):
-                    components_path = os.path.join(current_dir, components_path)
-                
-                print(f"🔍 Model path: {model_path}")
-                print(f"🔍 Components path: {components_path}")
-                
-                # Check if files exist
-                if not os.path.exists(model_path):
-                    print(f"❌ Model file not found: {model_path}")
-                    raise FileNotFoundError(f"Model file not found: {model_path}")
-                if not os.path.exists(components_path):
-                    print(f"❌ Components file not found: {components_path}")
-                    raise FileNotFoundError(f"Components file not found: {components_path}")
-                
-                # Load the model and components
-                model = joblib.load(model_path)
-                components = joblib.load(components_path)
-                
-                label_encoders = components['label_encoders']
-                scaler = components['scaler']
-                imputer = components['imputer']
-                feature_names = components['feature_names']
-                model_metadata = metadata
-                
-                print(f"✅ Loaded trained model: {metadata['model_name']}")
-                print(f"   Trained on: {metadata['timestamp']}")
-                print(f"   Features: {len(feature_names)}")
-                return True
-                
-            except Exception as e:
-                print(f"⚠️  Failed to load trained model: {e}")
-                print("   Falling back to synthetic data training...")
+                try:
+                    metadata_path = os.path.join(models_dir, latest_metadata)
+                    print(f"🔍 Loading metadata from: {os.path.abspath(metadata_path)}")
+                    
+                    with open(metadata_path, 'r') as f:
+                        metadata = json.load(f)
+                    
+                    # Get model and component filenames from metadata
+                    model_filename = os.path.basename(metadata['model_path'])
+                    components_filename = os.path.basename(metadata['components_path'])
+                    
+                    # Build absolute paths
+                    model_path = os.path.join(models_dir, model_filename)
+                    components_path = os.path.join(models_dir, components_filename)
+                    
+                    print(f"🔍 Model path: {model_path}")
+                    print(f"🔍 Components path: {components_path}")
+                    
+                    # Check if files exist
+                    if not os.path.exists(model_path):
+                        print(f"❌ Model file not found: {model_path}")
+                        raise FileNotFoundError(f"Model file not found: {model_path}")
+                    if not os.path.exists(components_path):
+                        print(f"❌ Components file not found: {components_path}")
+                        raise FileNotFoundError(f"Components file not found: {components_path}")
+                    
+                    # Load the model and components
+                    model = joblib.load(model_path)
+                    components = joblib.load(components_path)
+                    
+                    label_encoders = components['label_encoders']
+                    scaler = components['scaler']
+                    imputer = components['imputer']
+                    feature_names = components['feature_names']
+                    model_metadata = metadata
+                    
+                    print(f"✅ Loaded trained model: {metadata['model_name']}")
+                    print(f"   Trained on: {metadata['timestamp']}")
+                    print(f"   Features: {len(feature_names)}")
+                    return True
+                    
+                except Exception as e:
+                    print(f"⚠️  Failed to load trained model: {e}")
+                    print("   Falling back to synthetic data training...")
+        except Exception as e:
+            print(f"⚠️  Error accessing models directory: {e}")
     
     # Second, try to load the model from root directory (for Render deployment)
     root_model_path = os.path.join(current_dir, 'stroke_model.joblib')
