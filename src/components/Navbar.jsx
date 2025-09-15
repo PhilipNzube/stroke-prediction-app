@@ -48,10 +48,25 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const drawer = (
-    <Box sx={{ width: 250 }}>
-      <Box sx={{ p: 2, textAlign: 'center', borderBottom: 1, borderColor: 'divider' }}>
-        <HealthIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
-        <Typography variant="h6" color="primary">
+    <Box sx={{ width: { xs: 280, sm: 300 }, maxWidth: '85vw' }}>
+      <Box sx={{ 
+        p: 2, 
+        textAlign: 'center', 
+        borderBottom: 1, 
+        borderColor: 'divider' 
+      }}>
+        <HealthIcon sx={{ 
+          fontSize: { xs: 32, sm: 40 }, 
+          color: 'primary.main', 
+          mb: 1 
+        }} />
+        <Typography 
+          variant="h6" 
+          color="primary"
+          sx={{
+            fontSize: { xs: '1rem', sm: '1.25rem' }
+          }}
+        >
           Stroke Predictor
         </Typography>
       </Box>
@@ -63,6 +78,7 @@ const Navbar = () => {
             onClick={() => handleNavigation(item.path)}
             selected={isActive(item.path)}
             sx={{
+              py: 1.5,
               '&.Mui-selected': {
                 backgroundColor: 'primary.light',
                 '&:hover': {
@@ -71,7 +87,12 @@ const Navbar = () => {
               },
             }}
           >
-            <Box sx={{ mr: 2, color: isActive(item.path) ? 'primary.main' : 'inherit' }}>
+            <Box sx={{ 
+              mr: 2, 
+              color: isActive(item.path) ? 'primary.main' : 'inherit',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
               {item.icon}
             </Box>
             <ListItemText
@@ -79,6 +100,7 @@ const Navbar = () => {
               sx={{
                 '& .MuiTypography-root': {
                   fontWeight: isActive(item.path) ? 600 : 400,
+                  fontSize: { xs: '0.875rem', sm: '1rem' }
                 },
               }}
             />
@@ -103,13 +125,18 @@ const Navbar = () => {
           </IconButton>
 
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <HealthIcon sx={{ mr: 1, fontSize: 32 }} />
+            <HealthIcon sx={{ 
+              mr: 1, 
+              fontSize: { xs: 24, sm: 28, md: 32 },
+              display: { xs: 'none', sm: 'block' }
+            }} />
             <Typography
               variant="h6"
               component="div"
               sx={{
                 fontWeight: 700,
                 cursor: 'pointer',
+                fontSize: { xs: '1rem', sm: '1.1rem', md: '1.25rem' },
                 '&:hover': { opacity: 0.8 },
               }}
               onClick={() => navigate('/')}
@@ -119,7 +146,11 @@ const Navbar = () => {
           </Box>
 
           {!isMobile && (
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              gap: { xs: 0.5, sm: 1 },
+              flexWrap: 'wrap'
+            }}>
               {menuItems.map((item) => (
                 <Button
                   key={item.text}
@@ -128,6 +159,9 @@ const Navbar = () => {
                   sx={{
                     fontWeight: isActive(item.path) ? 600 : 400,
                     backgroundColor: isActive(item.path) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+                    padding: { xs: '6px 8px', sm: '8px 12px' },
+                    minWidth: 'auto',
                     '&:hover': {
                       backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     },
@@ -150,7 +184,11 @@ const Navbar = () => {
         }}
         sx={{
           display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 250 },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box', 
+            width: { xs: 280, sm: 300 },
+            maxWidth: '85vw'
+          },
         }}
       >
         {drawer}

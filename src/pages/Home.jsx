@@ -110,18 +110,27 @@ const Home = () => {
                 >
                   Advanced machine learning technology to assess your stroke risk and provide personalized recommendations for prevention.
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 2, 
+                  flexWrap: 'wrap',
+                  justifyContent: { xs: 'center', md: 'flex-start' },
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: 'center'
+                }}>
                   <Button
                     variant="contained"
                     size="large"
                     onClick={() => navigate('/predict')}
                     sx={{
-                      px: 4,
+                      px: { xs: 3, sm: 4 },
                       py: 1.5,
-                      fontSize: '1.1rem',
+                      fontSize: { xs: '1rem', sm: '1.1rem' },
                       fontWeight: 600,
                       backgroundColor: 'white',
                       color: 'primary.main',
+                      width: { xs: '100%', sm: 'auto' },
+                      maxWidth: { xs: '280px', sm: 'none' },
                       '&:hover': {
                         backgroundColor: 'grey.100',
                         transform: 'translateY(-2px)',
@@ -136,12 +145,14 @@ const Home = () => {
                     size="large"
                     onClick={() => navigate('/about')}
                     sx={{
-                      px: 4,
+                      px: { xs: 3, sm: 4 },
                       py: 1.5,
-                      fontSize: '1.1rem',
+                      fontSize: { xs: '1rem', sm: '1.1rem' },
                       fontWeight: 600,
                       borderColor: 'white',
                       color: 'white',
+                      width: { xs: '100%', sm: 'auto' },
+                      maxWidth: { xs: '280px', sm: 'none' },
                       '&:hover': {
                         borderColor: 'white',
                         backgroundColor: 'rgba(255,255,255,0.1)',

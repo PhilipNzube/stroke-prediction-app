@@ -211,12 +211,21 @@ const Dashboard = () => {
           <Typography variant="h5" component="h3" sx={{ mb: 3, fontWeight: 600 }}>
             Key Risk Factors Importance
           </Typography>
-          <Box sx={{ height: 400 }}>
+          <Box sx={{ height: { xs: 300, sm: 400 }, width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={featureChartData}>
+              <BarChart 
+                data={featureChartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="feature" />
-                <YAxis />
+                <XAxis 
+                  dataKey="feature" 
+                  angle={isMobile ? -45 : 0}
+                  textAnchor={isMobile ? 'end' : 'middle'}
+                  height={isMobile ? 80 : 30}
+                  fontSize={isMobile ? 12 : 14}
+                />
+                <YAxis fontSize={isMobile ? 12 : 14} />
                 <Tooltip formatter={(value) => [`${value}%`, 'Importance']} />
                 <Bar dataKey="importance" fill="#1976d2" />
               </BarChart>

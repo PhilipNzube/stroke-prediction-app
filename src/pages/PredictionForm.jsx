@@ -166,9 +166,13 @@ const PredictionForm = () => {
               <FormControl component="fieldset" error={!!errors.ever_married}>
                 <Typography variant="subtitle1" sx={{ mb: 2 }}>Have you ever been married?</Typography>
                 <RadioGroup
-                  row
+                  row={!isMobile}
                   value={formData.ever_married}
                   onChange={(e) => handleInputChange('ever_married', e.target.value)}
+                  sx={{ 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: { xs: 1, sm: 0 }
+                  }}
                 >
                   <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                   <FormControlLabel value="No" control={<Radio />} label="No" />
@@ -186,9 +190,13 @@ const PredictionForm = () => {
               <FormControl component="fieldset" error={!!errors.hypertension}>
                 <Typography variant="subtitle1" sx={{ mb: 2 }}>Do you have hypertension?</Typography>
                 <RadioGroup
-                  row
+                  row={!isMobile}
                   value={formData.hypertension}
                   onChange={(e) => handleInputChange('hypertension', e.target.value)}
+                  sx={{ 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: { xs: 1, sm: 0 }
+                  }}
                 >
                   <FormControlLabel value="0" control={<Radio />} label="No" />
                   <FormControlLabel value="1" control={<Radio />} label="Yes" />
@@ -200,9 +208,13 @@ const PredictionForm = () => {
               <FormControl component="fieldset" error={!!errors.heart_disease}>
                 <Typography variant="subtitle1" sx={{ mb: 2 }}>Do you have heart disease?</Typography>
                 <RadioGroup
-                  row
+                  row={!isMobile}
                   value={formData.heart_disease}
                   onChange={(e) => handleInputChange('heart_disease', e.target.value)}
+                  sx={{ 
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    gap: { xs: 1, sm: 0 }
+                  }}
                 >
                   <FormControlLabel value="0" control={<Radio />} label="No" />
                   <FormControlLabel value="1" control={<Radio />} label="Yes" />
@@ -328,25 +340,40 @@ const PredictionForm = () => {
           {renderStepContent(activeStep)}
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          mt: 4,
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+          alignItems: { xs: 'stretch', sm: 'center' }
+        }}>
           <Button
             disabled={activeStep === 0}
             onClick={handleBack}
-            sx={{ mr: 1 }}
+            sx={{ 
+              mr: { xs: 0, sm: 1 },
+              width: { xs: '100%', sm: 'auto' },
+              order: { xs: 2, sm: 1 }
+            }}
           >
             Back
           </Button>
-          <Box>
+          <Box sx={{ 
+            width: { xs: '100%', sm: 'auto' },
+            order: { xs: 1, sm: 2 }
+          }}>
             {activeStep === steps.length - 1 ? (
               <Button
                 variant="contained"
                 onClick={handleSubmit}
                 disabled={Object.keys(errors).length > 0}
                 sx={{
-                  px: 4,
+                  px: { xs: 3, sm: 4 },
                   py: 1.5,
-                  fontSize: '1.1rem',
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
                   fontWeight: 600,
+                  width: { xs: '100%', sm: 'auto' },
                 }}
               >
                 Get Prediction
@@ -356,6 +383,9 @@ const PredictionForm = () => {
                 variant="contained"
                 onClick={handleNext}
                 disabled={Object.keys(errors).length > 0}
+                sx={{
+                  width: { xs: '100%', sm: 'auto' },
+                }}
               >
                 Next
               </Button>

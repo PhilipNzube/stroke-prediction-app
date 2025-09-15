@@ -1,0 +1,624 @@
+/* Responsive Design Fixes for Stroke Prediction App */
+
+/* Global responsive fixes */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure all containers don't overflow */
+.MuiContainer-root {
+  max-width: 100% !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+@media (min-width: 600px) {
+  .MuiContainer-root {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+/* Fix for Material-UI Grid overflow */
+.MuiGrid-container {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.MuiGrid-item {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+@media (min-width: 600px) {
+  .MuiGrid-item {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Fix for Paper components */
+.MuiPaper-root {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Fix for Card components */
+.MuiCard-root {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Fix for Typography overflow */
+.MuiTypography-root {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+}
+
+/* Fix for Button groups */
+.MuiButtonGroup-root {
+  flex-wrap: wrap !important;
+}
+
+/* Fix for Stepper component */
+.MuiStepper-root {
+  width: 100% !important;
+  overflow-x: auto !important;
+}
+
+.MuiStepper-horizontal {
+  padding: 16px 0 !important;
+}
+
+/* Fix for RadioGroup */
+.MuiRadioGroup-root {
+  width: 100% !important;
+}
+
+.MuiFormControlLabel-root {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+}
+
+/* Fix for TextField */
+.MuiTextField-root {
+  width: 100% !important;
+}
+
+.MuiInputBase-root {
+  width: 100% !important;
+}
+
+/* Fix for Select */
+.MuiSelect-root {
+  width: 100% !important;
+}
+
+/* Fix for Drawer */
+.MuiDrawer-paper {
+  width: 280px !important;
+  max-width: 80vw !important;
+}
+
+/* Fix for AppBar */
+.MuiAppBar-root {
+  width: 100% !important;
+}
+
+/* Fix for Toolbar */
+.MuiToolbar-root {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  flex-wrap: wrap !important;
+  min-height: 56px !important;
+}
+
+@media (min-width: 600px) {
+  .MuiToolbar-root {
+    min-height: 64px !important;
+  }
+}
+
+/* Fix for Navigation buttons */
+.MuiToolbar-root .MuiButton-root {
+  min-width: auto !important;
+  padding: 8px 12px !important;
+  font-size: 0.875rem !important;
+}
+
+@media (max-width: 599px) {
+  .MuiToolbar-root .MuiButton-root {
+    padding: 6px 8px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Fix for Charts */
+.recharts-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.recharts-surface {
+  overflow: visible !important;
+}
+
+/* Fix for Motion components */
+.motion-div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix for Box components */
+.MuiBox-root {
+  max-width: 100% !important;
+}
+
+/* Responsive text sizing */
+@media (max-width: 599px) {
+  .MuiTypography-h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .MuiTypography-h2 {
+    font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  .MuiTypography-h3 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-h4 {
+    font-size: 1.125rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-h5 {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-h6 {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-body1 {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+  }
+  
+  .MuiTypography-body2 {
+    font-size: 0.75rem !important;
+    line-height: 1.5 !important;
+  }
+}
+
+/* Fix for very small screens */
+@media (max-width: 374px) {
+  .MuiContainer-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .MuiToolbar-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .MuiTypography-h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .MuiTypography-h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .MuiTypography-h3 {
+    font-size: 1.125rem !important;
+  }
+}
+
+/* Fix for landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .MuiContainer-root {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+  
+  .MuiPaper-root {
+    padding: 16px !important;
+  }
+  
+  .MuiTypography-h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .MuiTypography-h2 {
+    font-size: 1.25rem !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* Fix for overflow in specific components */
+.MuiAccordion-root {
+  max-width: 100% !important;
+}
+
+.MuiList-root {
+  width: 100% !important;
+}
+
+.MuiListItem-root {
+  width: 100% !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+/* Fix for Chip components */
+.MuiChip-root {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Fix for Alert components */
+.MuiAlert-root {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Fix for Dialog components */
+.MuiDialog-paper {
+  max-width: 95vw !important;
+  max-height: 95vh !important;
+  margin: 16px !important;
+}
+
+/* Fix for Table components */
+.MuiTable-root {
+  width: 100% !important;
+  table-layout: auto !important;
+}
+
+.MuiTableCell-root {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  max-width: 200px !important;
+}
+
+/* Fix for Tabs */
+.MuiTabs-root {
+  width: 100% !important;
+}
+
+.MuiTab-root {
+  min-width: auto !important;
+  padding: 8px 12px !important;
+  font-size: 0.875rem !important;
+}
+
+@media (max-width: 599px) {
+  .MuiTab-root {
+    padding: 6px 8px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Fix for FormControl */
+.MuiFormControl-root {
+  width: 100% !important;
+}
+
+/* Fix for InputLabel */
+.MuiInputLabel-root {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Fix for MenuItem */
+.MuiMenuItem-root {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Fix for CircularProgress */
+.MuiCircularProgress-root {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* Fix for Skeleton */
+.MuiSkeleton-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Avatar */
+.MuiAvatar-root {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* Fix for Badge */
+.MuiBadge-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Tooltip */
+.MuiTooltip-tooltip {
+  max-width: 300px !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for Snackbar */
+.MuiSnackbar-root {
+  max-width: 100% !important;
+}
+
+.MuiSnackbarContent-root {
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for Backdrop */
+.MuiBackdrop-root {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* Fix for Modal */
+.MuiModal-root {
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+/* Fix for Popper */
+.MuiPopper-root {
+  max-width: 100vw !important;
+}
+
+/* Fix for Menu */
+.MuiMenu-paper {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+}
+
+/* Fix for Popover */
+.MuiPopover-paper {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+}
+
+/* Fix for SpeedDial */
+.MuiSpeedDial-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Timeline */
+.MuiTimeline-root {
+  width: 100% !important;
+}
+
+.MuiTimelineItem-root {
+  width: 100% !important;
+}
+
+/* Fix for Stepper */
+.MuiStepLabel-root {
+  max-width: 100% !important;
+}
+
+.MuiStepLabel-label {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for Rating */
+.MuiRating-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Slider */
+.MuiSlider-root {
+  width: 100% !important;
+}
+
+/* Fix for Switch */
+.MuiSwitch-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Checkbox */
+.MuiCheckbox-root {
+  max-width: 100% !important;
+}
+
+/* Fix for Radio */
+.MuiRadio-root {
+  max-width: 100% !important;
+}
+
+/* Fix for FormGroup */
+.MuiFormGroup-root {
+  width: 100% !important;
+}
+
+/* Fix for FormLabel */
+.MuiFormLabel-root {
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for FormHelperText */
+.MuiFormHelperText-root {
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for InputBase */
+.MuiInputBase-input {
+  width: 100% !important;
+}
+
+/* Fix for OutlinedInput */
+.MuiOutlinedInput-root {
+  width: 100% !important;
+}
+
+/* Fix for FilledInput */
+.MuiFilledInput-root {
+  width: 100% !important;
+}
+
+/* Fix for Input */
+.MuiInput-root {
+  width: 100% !important;
+}
+
+/* Fix for NativeSelect */
+.MuiNativeSelect-root {
+  width: 100% !important;
+}
+
+/* Fix for Select */
+.MuiSelect-select {
+  width: 100% !important;
+}
+
+/* Fix for Autocomplete */
+.MuiAutocomplete-root {
+  width: 100% !important;
+}
+
+.MuiAutocomplete-inputRoot {
+  width: 100% !important;
+}
+
+/* Fix for Pagination */
+.MuiPagination-root {
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.MuiPagination-ul {
+  flex-wrap: wrap !important;
+}
+
+/* Fix for Breadcrumbs */
+.MuiBreadcrumbs-root {
+  width: 100% !important;
+}
+
+.MuiBreadcrumbs-ol {
+  flex-wrap: wrap !important;
+}
+
+/* Fix for Link */
+.MuiLink-root {
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix for Divider */
+.MuiDivider-root {
+  width: 100% !important;
+}
+
+/* Fix for Paper elevation */
+.MuiPaper-elevation1 {
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12) !important;
+}
+
+.MuiPaper-elevation2 {
+  box-shadow: 0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12) !important;
+}
+
+.MuiPaper-elevation3 {
+  box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12) !important;
+}
+
+/* Fix for Paper elevation 4 and above */
+.MuiPaper-elevation4,
+.MuiPaper-elevation5,
+.MuiPaper-elevation6,
+.MuiPaper-elevation7,
+.MuiPaper-elevation8,
+.MuiPaper-elevation9,
+.MuiPaper-elevation10,
+.MuiPaper-elevation11,
+.MuiPaper-elevation12,
+.MuiPaper-elevation13,
+.MuiPaper-elevation14,
+.MuiPaper-elevation15,
+.MuiPaper-elevation16,
+.MuiPaper-elevation17,
+.MuiPaper-elevation18,
+.MuiPaper-elevation19,
+.MuiPaper-elevation20,
+.MuiPaper-elevation21,
+.MuiPaper-elevation22,
+.MuiPaper-elevation23,
+.MuiPaper-elevation24 {
+  box-shadow: 0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12) !important;
+}
+
+/* Fix for very wide content */
+@media (min-width: 1920px) {
+  .MuiContainer-maxWidthLg {
+    max-width: 1200px !important;
+  }
+  
+  .MuiContainer-maxWidthXl {
+    max-width: 1400px !important;
+  }
+}
+
+/* Fix for print styles */
+@media print {
+  * {
+    overflow: visible !important;
+  }
+  
+  .MuiContainer-root {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  
+  .MuiPaper-root {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+  
+  .MuiAppBar-root {
+    display: none !important;
+  }
+  
+  .MuiDrawer-root {
+    display: none !important;
+  }
+}
